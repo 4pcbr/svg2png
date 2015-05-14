@@ -49,35 +49,7 @@
   }
 
   function styles(el, selectorRemap) {
-    var css = "";
-    var sheets = document.styleSheets;
-    for (var i = 0; i < sheets.length; i++) {
-      if (isExternal(sheets[i].href)) {
-        console.warn("Cannot include styles from other hosts: "+sheets[i].href);
-        continue;
-      }
-      var rules = sheets[i].cssRules;
-      if (rules != null) {
-        for (var j = 0; j < rules.length; j++) {
-          var rule = rules[j];
-          if (typeof(rule.style) != "undefined") {
-            var match = null;
-            try {
-              match = el.querySelector(rule.selectorText);
-            } catch(err) {
-              console.warn('Invalid CSS selector "' + rule.selectorText + '"', err);
-            }
-            if (match) {
-              var selector = selectorRemap ? selectorRemap(rule.selectorText) : rule.selectorText;
-              css += selector + " { " + rule.style.cssText + " }\n";
-            } else if(rule.cssText.match(/^@font-face/)) {
-              css += rule.cssText + '\n';
-            }
-          }
-        }
-      }
-    }
-    return css;
+    return "svg {" + window.getComputedStyle(el, null).cssText + "}";
   }
 
   out$.svgAsDataUri = function(el, options, cb) {
@@ -89,28 +61,11 @@
       var outer = document.createElement("div");
       var clone = el.cloneNode(true);
       var width, height, viewBox;
-      var viewBoxComponents;
       if(el.tagName == 'svg') {
         var box = el.getBoundingClientRect();
         width = box.width;
         height = box.height;
         viewBox = el.getAttribute("viewBox");
-        // if (viewBox) {
-        //   viewBoxComponents = /(\d+)\s+(\d+)\s+(\d+)\s(\d+)/.exec(viewBox);
-        //   if (viewBoxComponents) {
-        //     viewBoxComponents.shift();
-        //     var vb_x    = viewBoxComponents.shift();
-        //     var vb_y    = viewBoxComponents.shift();
-        //     var vb_w    = viewBoxComponents.shift();
-        //     var vb_h    = viewBoxComponents.shift();
-        //     var scale_w = width * options.scale / vb_w;
-        //     var scale_h = height * options.scale / vb_h;
-        //     var scale   = Math.min(scale_w, scale_h);
-        //     var transform = "matrix("+scale+",0,0,"+scale+","+vb_x+","+vb_y+")";
-        //     console.log(transform)
-        //     clone.setAttribute('transform', transform);
-        //   }
-        // }
       } else {
         var box = el.getBBox();
         width = box.x + box.width;
@@ -157,7 +112,6 @@
         var canvas = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
-        console.log("Image width: %d, height: %d", image.width, image.height);
         var context = canvas.getContext('2d');
         context.drawImage(image, 0, 0);
 

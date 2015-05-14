@@ -90,13 +90,6 @@
   function saveThePicture() {
     var picName = getPicName();
     var scale = getScale();
-    console.log(
-      getSVGHTMLElement(),
-      picName,
-      {
-        scale: scale
-      }
-    );
     saveSvgAsPng(
       getSVGHTMLElement(),
       picName,
@@ -104,6 +97,7 @@
         scale: scale
       }
     );
+    hideBaloon();
   }
 
   function getSVGHTMLElement() {
