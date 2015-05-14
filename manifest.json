@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+
+  "name": "svg2png",
+  "description": "This extension provides a context menu functionality to save SVG images as PNG.",
+  "version": "1.0",
+
+  "permissions": [
+    "contextMenus"
+  ],
+
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-100.png"
+  },
+
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "js": [
+      "jquery.js",
+      "saveSvgAsPng.js",
+      "sha1.js",
+      "content_script.js"
+    ]
+  }],
+
+  "background": {
+    "scripts": [
+      "script.js"
+    ]
+  }
+}
