@@ -1,4 +1,7 @@
 (function() {
+
+  document.addEventListener('click', trackDocumentOnClick, false);
+
   var out$ = typeof exports != 'undefined' && exports || this;
 
   var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
@@ -103,6 +106,10 @@
     });
   }
 
+  function trackDocumentOnClick(e) {
+    console.log(e);
+  }
+
   out$.saveSvgAsPng = function(el, name, options) {
     options = options || {};
     out$.svgAsDataUri(el, options, function(uri) {
@@ -120,8 +127,16 @@
         a.href = canvas.toDataURL('image/png');
         document.body.appendChild(a);
         a.addEventListener("click", function(e) {
+          e.stopPropagation();
           a.parentNode.removeChild(a);
         });
+        // document.addEventListener("click", function(e) {
+        //   console.log(e.target)
+        //   if (e.target == a) {
+        //     e.stopPropagation();
+        //     //a.click();
+        //   }
+        // });
         a.click();
       }
     });

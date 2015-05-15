@@ -11,6 +11,7 @@
       onclick:  function(info, tab) {
         chrome.tabs.sendMessage(tab.id, "svg2pngDidClick");
       },
+      enabled: false
     });
   }
 
@@ -41,15 +42,13 @@
       if (request == "onSVGDOMContentLoaded") {
         svg2pngCreateContextMenu();
       }
-      // if (request == "onSVGMouseDown") {
-      //   console.log('enabled');
-      //   svg2pngActivateContextMenu();
-      // } else if (request == "onOtherElMouseDown") {
-      //   console.log('disabled');
-      //   svg2pngDeactivateContextMenu();
-      // } else {
-      //   sendResponse({});
-      // }
+      if (request == "onSVGMouseDown") {
+        svg2pngActivateContextMenu();
+      } else if (request == "onOtherElMouseDown") {
+        svg2pngDeactivateContextMenu();
+      } else {
+        sendResponse({});
+      }
     }
   );
 

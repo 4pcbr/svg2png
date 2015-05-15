@@ -6,8 +6,11 @@
   var $heightInput;
   var $downloadButton;
 
+  var __mouseX__;
+  var __mouseY__;
+
   BALOON_TMPL = "\
-    <div style='position: absolute; left: 0; top: 0; z-index: 1000; background-color: rgba(255,255,255,0.8); border: 1px solid #2980b9; border-radius: 5px; display: none; width: 150px; text-align: center; padding: 10px;'>\
+    <div style='position: absolute; left: 0; top: 0; z-index: 1000; background-color: rgba(255,255,255,0.8); border: 1px solid #2980b9; border-radius: 5px; display: none; width: 150px; text-align: center; padding: 10px; color: #313131; font-family: Helvetica; font-size: 14px;'>\
     <form>\
       <div>\
         <label>\
@@ -36,13 +39,31 @@
     });
   }
 
+  var __min_max__ = function(v, min, max) {
+    return (v < min) ? min : ((v > max) ? max : v);
+  }
   var __show__ = function(cb) {
     var originalSize = getOriginalSize();
     $widthInput.val(originalSize.width);
     $heightInput.val(originalSize.height);
+    var width  = $baloon.width()|0;
+    var height = $baloon.height()|0;
+    var windowWidth  = $(window).width();
+    var windowHeight = $(window).height();
+    var left = __min_max__(
+      __mouseX__ - width / 2,
+      0,
+      windowWidth - width
+    );
+    var top = __min_max__(
+      __mouseY__ - height / 2,
+      0,
+      windowHeight - height
+    );
+    
     $baloon.css({
-      left: $closestSVG.offset().left|0,
-      top:  $closestSVG.offset().top|0,
+      left: left,
+      top:  top,
     });
     $baloon.fadeIn('fast', cb);
   }
@@ -121,7 +142,6 @@
   }
 
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log("Runtime message: ", request, sender);
     if (request == "svg2pngDidClick") {
       if ($closestSVG.length) showBaloon();
     }
@@ -137,11 +157,19 @@
     $(document).mousedown(function(e) {
       if (e.button != 2) return;
       $closestSVG = $(e.target).closest("svg");
-      if (!$closestSVG.length) {
+      if ($closestSVG.length) {
+        __mouseX__ = e.pageX|0;
+        __mouseY__ = e.pageY|0;
         sendMessage("onSVGMouseDown");
       } else {
         sendMessage("onOtherElMouseDown");
       }
+    });
+
+    $("body").on("mouseover", "svg", function() {
+      sendMessage("onSVGMouseDown");
+    }).on("mouseout", "svg", function() {
+      sendMessage("onOtherElMouseDown");
     });
     
     $(document).keydown(function(e) {
